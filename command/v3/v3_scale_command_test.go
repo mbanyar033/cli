@@ -204,7 +204,8 @@ var _ = FDescribe("Scale Command", func() {
 
 			Context("when all flag options are provided", func() {
 				BeforeEach(func() {
-					cmd.Instances = 3
+					cmd.Instances.Value = 3
+					cmd.Instances.IsSet = true
 					cmd.MemoryLimit = flag.Megabytes{Size: 256}
 					cmd.DiskLimit = flag.Megabytes{Size: 64}
 
@@ -268,10 +269,6 @@ var _ = FDescribe("Scale Command", func() {
 						Expect(testUI.Err).To(Say("scale-process-warning"))
 					})
 				})
-			})
-
-			FContext("when the '-i' flag option is not provided", func() {
-				It("should not set the default value of 0 for number of instances", func() {})
 			})
 
 			XContext("when only the instances flag option is provided", func() {

@@ -22,7 +22,7 @@ type V3ScaleActor interface {
 
 type V3ScaleCommand struct {
 	RequiredArgs    flag.AppName   `positional-args:"yes"`
-	Instances       int            `short:"i" description:"Number of instances"`
+	Instances       flag.Instances `short:"i" description:"Number of instances"`
 	DiskLimit       flag.Megabytes `short:"k" description:"Disk limit (e.g. 256M, 1024M, 1G)"`
 	MemoryLimit     flag.Megabytes `short:"m" description:"Memory limit (e.g. 256M, 1024M, 1G)"`
 	usage           interface{}    `usage:"CF_NAME v3-scale APP_NAME [-i INSTANCES] [-k DISK] [-m MEMORY]"`
@@ -69,8 +69,7 @@ func (cmd V3ScaleCommand) Execute(args []string) error {
 	}
 
 	var actorErr error
-	// TODO: distinguish between user provided instance value and default
-	if cmd.Instances == 0 && cmd.DiskLimit.Size == 0 && cmd.MemoryLimit.Size == 0 {
+	if cmd.Instances.IsSet == false && cmd.DiskLimit.Size == 0 && cmd.MemoryLimit.Size == 0 {
 		actorErr = cmd.getAndDisplayProcess(app.GUID, user.Name)
 	} else {
 		actorErr = cmd.scaleAndDisplayProcess(app.GUID, user.Name)
@@ -110,7 +109,7 @@ func (cmd V3ScaleCommand) scaleAndDisplayProcess(appGUID string, username string
 
 	ccv3Process := ccv3.Process{
 		Type:       "web",
-		Instances:  cmd.Instances,
+		Instances:  cmd.Instances.Value,
 		MemoryInMB: int(cmd.MemoryLimit.Size),
 		DiskInMB:   int(cmd.DiskLimit.Size),
 	}
